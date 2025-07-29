@@ -1,0 +1,21 @@
+Requirements:-
+2+ years of experience as a full-stack engineer or in a similar role.
+Proficiency in front-end technologies such as JavaScript, HTML, CSS, and frameworks like React, Vue, or Angular.
+Strong back-end experience in Python, including designing and building scalable APIs and server-side logic.
+Comfortable working with both SQL (e.g., PostgreSQL, MySQL) and NoSQL (e.g., MongoDB) databases.
+Skilled in RESTful API design and WebSocket integrations.
+Experience with Git and collaborative workflows in modern software development environments.
+Familiarity with cloud platforms (especially AWS) and containerization tools such as Docker for deployment and environment management.
+Strong communication skills and the ability to collaborate effectively with both technical and non-technical stakeholders.
+Hands-on experience building with LLMs (e.g., OpenAI, Claude, Gemini) in ways that go well beyond basic prompting.
+Practical knowledge of advanced LLM use cases including: Tool/function calling, Agentic workflows, Retrieval-Augmented Generation (RAG), and Finetuning models.
+Familiarity with leading GenAI frameworks and tools such as LangChain, Hugging Face, LlamaIndex, Haystack, or similar.
+Demonstrated ability to integrate AI capabilities into full-stack applications as part of side projects, prior work experience, or academic research.
+A strong interest in the evolving AI/LLM landscape and a drive to stay ahead of emerging trends.
+Responsibilities:-
+Design, develop, and maintain both front-end and back-end components of GenAI-powered applications.
+Build and integrate APIs and third-party services—including tools like Cursor, Windsurf, and various LLM platforms—to enhance AI functionality.
+Collaborate closely with product and engineering teams to prototype and iterate on innovative, AI-driven user experiences.
+Design and manage databases with a focus on performance, reliability, and scalability for AI-intensive applications.
+Contribute to architecture discussions, especially around LLM integration, prompt pipelines, and agentic workflows.
+Stay deeply informed about advancements in GenAI, LLMs, and software development to help evolve our engineering practices and AI capabilities.
