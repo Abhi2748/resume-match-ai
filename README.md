@@ -36,9 +36,7 @@ resume-match-ai/
 ├── match_engine.py                    # Matching logic module
 ├── prompts.py                         # Prompt engineering logic
 ├── blob-scene-haikei.svg              # Custom SVG background
-├── *.svg                              # Optional visuals
 ├── test_graph.py                      # CLI test entry
-├── test_parser.py                     # Parser/debug test
 ├── requirements.txt                   # Python dependencies
 ├── .env                               # API keys (excluded in .gitignore)
 ├── .gitignore
@@ -102,13 +100,12 @@ Major dependencies include:
 - PyMuPDF
 - openai / langchain
 - streamlit-extras
-- tiktoken
 
 Full list in `requirements.txt`.
 
 ---
 
-## License
+## Contact
 
-For personal and educational use. Check LLM provider terms (e.g., OpenAI) for any commercial usage.
+mail: abhireddy2748@gmail.com
 
