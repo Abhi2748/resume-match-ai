@@ -2,7 +2,7 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 
 def get_embeddings(text1, text2):
-    model = SentenceTransformer('all-MiniLM-L6-v2')  # Lightweight, fast, and accurate
+    model = SentenceTransformer('all-mpnet-base-v2')  
     embeddings = model.encode([text1, text2])
     return embeddings
 
