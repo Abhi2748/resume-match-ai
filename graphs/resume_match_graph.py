@@ -12,7 +12,7 @@ from utils.embedding_utils import get_mean_embedding, cosine_similarity
 from utils.llm_utils import call_llm_json
 from prompts import extract_resume_info_with_llm, extract_jd_info_with_llm, llm_match_skills_and_responsibilities
 embedder = SentenceTransformer("all-MiniLM-L6-v2")
-llm = ChatOpenAI(model="gpt-4", temperature=0)
+llm = ChatOpenAI(model="gpt-4o", temperature=0.3)
 
 INITIAL_KEYS = [
     "resume_text", "jd_text"
