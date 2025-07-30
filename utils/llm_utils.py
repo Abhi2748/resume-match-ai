@@ -14,11 +14,11 @@ llm = ChatOpenAI(openai_api_key=OPENAI_API_KEY, model="gpt-4o", temperature=0.3)
 
 def call_llm_json(prompt_or_str, variables=None):
     try:
-        # Run the LLM call
+        # Running the LLM call
         response = llm.invoke(prompt_or_str.format(**(variables or {})))
         content = response.content.strip()
 
-        # Extract clean JSON block from any junk response
+        # Extracting clean JSON block from any junk response
         match = re.search(r'\{[\s\S]+\}', content)
         if match:
             json_block = match.group()
