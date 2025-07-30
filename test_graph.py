@@ -10,6 +10,7 @@ with open("sample_data/sample_resume.pdf", "rb") as f:
 with open("sample_data/sample_jd.txt", "r", encoding="utf-8") as f:
     jd_text = f.read()
 
+# Prepare inputs
 inputs = {
     "resume_text": resume_text,
     "jd_text": jd_text
@@ -18,41 +19,31 @@ inputs = {
 # Run graph
 result = app.invoke(inputs)
 
-print("\n✅ Final Output:")
-for k, v in result.items():
-    if isinstance(v, (list, dict)):
-        print(f"\n🔹 {k.upper()}:")
-        if isinstance(v, list):
-            for i in v:
-                print("•", i)
-        else:
-            for sub_k, sub_v in v.items():
-                print(f"{sub_k}: {sub_v}")
-    else:
-        print(f"{k}: {v}")
+# --- Cleaned Final Output ---
+print("\n✅ Final Output\n")
 
-# Friendly summaries
-print("\n🔍 Match Score:", result.get("semantic_match_score", "N/A"))
-print("✅ Matched Skills:", result.get("semantic_common_skills", []))
-print("❌ Gaps:", result.get("semantic_gaps", []))
+print("🔍 Match Score:", result.get("semantic_match_score", "N/A"))
 
-print("\n🔄 Responsibility Match:")
-resp = result.get("responsibility_match", {})
-print("Matched:", resp.get("matched", []))
-print("Unmatched:", resp.get("unmatched", []))
+print("\n✅ Matching Points:")
+for point in result.get("matching_points", []):
+    print("•", point)
 
-print("\n🧠 Verified Skill Verdicts:")
-for skill in result.get("verified_skills", []):
-    print(f"• {skill['skill']}: {skill['verdict']} – {skill['reason']}")
+print("\n❌ Missing Points:")
+for point in result.get("missing_points", []):
+    print("•", point)
 
 print("\n📈 Career Improvement Tips:")
-for tip in result.get("improvement_suggestions", []):
-    print(f"👉 {tip}")
+for tip in result.get("career_improvement_tips", []):
+    print("👉", tip)
 
 print("\n🎯 Suggested Job Roles:")
-roles = result.get("realistic_job_roles", [])
+roles = result.get("realistic_roles_with_reasons", [])
 if isinstance(roles, list):
     for role in roles:
-        print("🎯", role)
+        print(f"🎯 {role.get('title')}: {role.get('reason')}")
 else:
-    print("⚠️ realistic_job_roles is not a list:", roles)
+    print("⚠️ realistic_roles_with_reasons is not a list:", roles)
+
+print("\n🧠 Verified Skill Verdicts:")
+for item in result.get("verified_skill_verdicts", []):
+    print("•", item)

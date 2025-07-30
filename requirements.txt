@@ -9,4 +9,5 @@ sentence-transformers
 scikit-learn
 openai
 streamlit
+streamlit-extras
 unstructured[local-inference,pdf]

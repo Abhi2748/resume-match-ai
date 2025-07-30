@@ -64,6 +64,17 @@ def get_llm_matching(resume_data, jd_data):
     jd_skills = jd_data.get("critical_skills", [])
     resume_projects = resume_data.get("Key projects", [])
     jd_responsibilities = jd_data.get("key_responsibilities", [])
-    return llm_match_skills_and_responsibilities(
+    # Call LLM
+    raw_json = llm_match_skills_and_responsibilities(
         resume_skills, jd_skills, resume_projects, jd_responsibilities
     )
+
+    # Ensure all expected keys exist
+    return {
+        "matched_skills": raw_json.get("matched_skills", []),
+        "unmatched_skills": raw_json.get("unmatched_skills", []),
+        "matched_responsibilities": raw_json.get("matched_responsibilities", []),
+        "unmatched_responsibilities": raw_json.get("unmatched_responsibilities", []),
+        "matching_points": raw_json.get("matching_points", []),
+        "missing_points": raw_json.get("missing_points", [])
+    }

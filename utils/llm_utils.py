@@ -1,8 +1,8 @@
 import os
+import json
+import re
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
-from langchain_core.output_parsers import JsonOutputParser
-from langchain_core.prompts import PromptTemplate
 
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -11,19 +11,31 @@ if not OPENAI_API_KEY:
     raise ValueError("OPENAI_API_KEY is missing. Check your .env file.")
 
 llm = ChatOpenAI(openai_api_key=OPENAI_API_KEY, model="gpt-4", temperature=0)
-parser = JsonOutputParser()
 
 def call_llm_json(prompt_or_str, variables=None):
     try:
-        response = llm.invoke(prompt_or_str.format(**variables))
-        import json, re
-        json_text = re.search(r'\{.*\}|\[.*\]', response.content, re.DOTALL)
-        if json_text:
-            return json.loads(json_text.group())
+        # Run the LLM call
+        response = llm.invoke(prompt_or_str.format(**(variables or {})))
+        content = response.content.strip()
+
+        # Extract clean JSON block from any junk response
+        match = re.search(r'\{[\s\S]+\}', content)
+        if match:
+            json_block = match.group()
+            try:
+                return json.loads(json_block)
+            except json.JSONDecodeError as e:
+                print("⚠️ JSON Decode Error:", e)
+                print("⚠️ Raw JSON:\n", json_block)
+                return {}
         else:
+            print("⚠️ No JSON block found in LLM output.")
+            print("Raw content:", content)
             return {}
+
     except Exception as e:
-        return {"error": str(e)}
+        print("⚠️ Fatal Exception while calling LLM:", e)
+        return {}
 
 def call_llm_json_verbose(prompt_or_str, variables=None):
     return call_llm_json(prompt_or_str, variables)

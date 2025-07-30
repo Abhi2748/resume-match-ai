@@ -9,7 +9,8 @@ from utils.data_utils import (
     get_llm_matching
 )
 from utils.embedding_utils import get_mean_embedding, cosine_similarity
-
+from utils.llm_utils import call_llm_json
+from prompts import extract_resume_info_with_llm, extract_jd_info_with_llm, llm_match_skills_and_responsibilities
 embedder = SentenceTransformer("all-MiniLM-L6-v2")
 llm = ChatOpenAI(model="gpt-4", temperature=0)
 
@@ -19,27 +20,26 @@ INITIAL_KEYS = [
 
 # --- Node 1: Semantic Skill Matcher ---
 def semantic_skill_matcher_node(state):
-    # Debug: print extracted resume and JD data
-    print("\n--- DEBUG: Resume Data ---")
-    print(state["resume_data"])
-    print("--- DEBUG: JD Data ---")
-    print(state["jd_data"])
-    # Use LLM for matching
-    match_result = get_llm_matching(state["resume_data"], state["jd_data"])
-    print("--- DEBUG: LLM Match Result ---")
-    print(match_result)
+    resume_skills = state["resume_data"].get("skills", [])
+    resume_projects = state["resume_data"].get("Key projects", [])
+    jd_skills = state["jd_data"].get("skills", [])
+    jd_responsibilities = state["jd_data"].get("key_responsibilities", [])
+
+    match_result = llm_match_skills_and_responsibilities(
+        resume_skills, jd_skills, resume_projects, jd_responsibilities
+    )
+    # Extract relevant outputs
     state["matched_skills"] = match_result.get("matched_skills", [])
     state["unmatched_skills"] = match_result.get("unmatched_skills", [])
     state["matched_responsibilities"] = match_result.get("matched_responsibilities", [])
     state["unmatched_responsibilities"] = match_result.get("unmatched_responsibilities", [])
-    # For backward compatibility, also fill semantic_common_skills/gaps
-    state["semantic_common_skills"] = state["matched_skills"]
-    state["semantic_gaps"] = state["unmatched_skills"]
-    # Semantic match score (simple ratio)
-    total_skills = len(state["matched_skills"]) + len(state["unmatched_skills"])
-    state["semantic_match_score"] = round(
-        len(state["matched_skills"]) / total_skills if total_skills else 0.0, 2
-    )
+    state["matching_points"] = match_result.get("matching_points", [])
+    state["missing_points"] = match_result.get("missing_points", [])
+
+    # Optional: Simple semantic score (can improve later)
+    total = len(state["matching_points"]) + len(state["missing_points"])
+    state["semantic_match_score"] = round(len(state["matching_points"]) / total, 2) if total else 0.0
+
     return state
 
 # --- Node 2: LLM Experience Verifier ---
@@ -73,7 +73,7 @@ def llm_experience_verifier_node(state):
 
 # --- Node 3: Intelligent Advisor ---
 advisor_prompt = PromptTemplate.from_template("""
-You are an intelligent career advisor. Based on the resume and job description, suggest realistic job roles, smart reasoning, career improvement tips, and verified skill verdicts for this candidate.
+You are an intelligent career advisor. Based on the resume and job description, suggest realistic job roles, reasons why they are a good fit, improvement tips, and skill verification.
 
 Resume:
 {resume}
@@ -81,14 +81,33 @@ Resume:
 Job Description:
 {jd}
 
-Respond as JSON:
+Respond in this JSON format:
 {{
-  "realistic_roles": [...],
-  "advisor_suggestions": [...],
-  "career_improvement_tips": [...],
-  "verified_skill_verdicts": [...]
+  "realistic_roles_with_reasons": [
+    {{
+      "title": "Full Stack Developer",
+      "reason": "Candidate has strong backend and moderate frontend skills."
+    }},
+    {{
+      "title": "DevOps Engineer",
+      "reason": "Experience with Docker, Kubernetes, CI/CD pipelines, and cloud deployment."
+    }}
+  ],
+  "advisor_suggestions": [
+    "Contribute to open-source projects involving Flask or FastAPI.",
+    "Enhance frontend skills using React or Vue."
+  ],
+  "career_improvement_tips": [
+    "Get certified in AWS.",
+    "Work on projects involving full-stack systems."
+  ],
+  "verified_skill_verdicts": [
+    "Python: Verified",
+    "React: Not Verified"
+  ]
 }}
 """)
+
 
 def intelligent_advisor_node(state):
     resume = state["resume_text"]
@@ -98,12 +117,12 @@ def intelligent_advisor_node(state):
     json_text = re.search(r'\{.*\}', result.content, re.DOTALL)
     if json_text:
         advisor_data = json.loads(json_text.group())
-        state["realistic_roles"] = advisor_data.get("realistic_roles", [])
+        state["realistic_roles_with_reasons"] = advisor_data.get("realistic_roles_with_reasons", [])
         state["advisor_suggestions"] = advisor_data.get("advisor_suggestions", [])
         state["career_improvement_tips"] = advisor_data.get("career_improvement_tips", [])
         state["verified_skill_verdicts"] = advisor_data.get("verified_skill_verdicts", [])
     else:
-        state["realistic_roles"] = []
+        state["realistic_roles_with_reasons"] = []
         state["advisor_suggestions"] = []
         state["career_improvement_tips"] = []
         state["verified_skill_verdicts"] = []
@@ -112,15 +131,10 @@ def intelligent_advisor_node(state):
 # --- Final Output Node ---
 def final_output_node(state):
     return {
-        "semantic_common_skills": state.get("semantic_common_skills", []),
-        "semantic_gaps": state.get("semantic_gaps", []),
         "semantic_match_score": state.get("semantic_match_score", 0.0),
-        "matched_skills": state.get("matched_skills", []),
-        "unmatched_skills": state.get("unmatched_skills", []),
-        "matched_responsibilities": state.get("matched_responsibilities", []),
-        "unmatched_responsibilities": state.get("unmatched_responsibilities", []),
-        "llm_verdicts": state.get("llm_verdicts", []),
-        "realistic_roles": state.get("realistic_roles", []),
+        "matching_points": state.get("matching_points", []),
+        "missing_points": state.get("missing_points", []),
+        "realistic_roles_with_reasons": state.get("realistic_roles_with_reasons", []),
         "advisor_suggestions": state.get("advisor_suggestions", []),
         "career_improvement_tips": state.get("career_improvement_tips", []),
         "verified_skill_verdicts": state.get("verified_skill_verdicts", [])

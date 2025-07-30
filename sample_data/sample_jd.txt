@@ -1,4 +1,5 @@
 Requirements:-
+
 2+ years of experience as a full-stack engineer or in a similar role.
 Proficiency in front-end technologies such as JavaScript, HTML, CSS, and frameworks like React, Vue, or Angular.
 Strong back-end experience in Python, including designing and building scalable APIs and server-side logic.
@@ -12,7 +13,9 @@ Practical knowledge of advanced LLM use cases including: Tool/function calling, 
 Familiarity with leading GenAI frameworks and tools such as LangChain, Hugging Face, LlamaIndex, Haystack, or similar.
 Demonstrated ability to integrate AI capabilities into full-stack applications as part of side projects, prior work experience, or academic research.
 A strong interest in the evolving AI/LLM landscape and a drive to stay ahead of emerging trends.
+
 Responsibilities:-
+
 Design, develop, and maintain both front-end and back-end components of GenAI-powered applications.
 Build and integrate APIs and third-party services—including tools like Cursor, Windsurf, and various LLM platforms—to enhance AI functionality.
 Collaborate closely with product and engineering teams to prototype and iterate on innovative, AI-driven user experiences.
